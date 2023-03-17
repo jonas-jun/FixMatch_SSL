@@ -1,11 +1,15 @@
 import os, argparse
 import torch
 import pytorch_lightning as pl
+from pytorch_lightning.callbacks import ModelCheckpoint, TQDMProgressBar, LearningRateMonitor
+from pytorch_lightning.loggers import TensorBoardLogger
 from train_utils import args_from_yaml
 from data_utils import atmDataModule
+from model import atmNet
+
 
 if __name__ == '__main__':
-    os.environ['CUDA_VISIBLE_DEVICES'] == '0,1'
+    os.environ['CUDA_VISIBLE_DEVICES'] = '0,1'
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', '-C', type=str, default='fixmatch_1.yaml')
     parser.add_argument('--tqdm_rate', '-TQDM', type=int, default=1)
@@ -23,3 +27,43 @@ if __name__ == '__main__':
 
     # build dataset
     dm = atmDataModule(args=args)
+    print('Data Module Built')
+
+    # build model
+    if args.mode == 'train':
+        model = None
+    elif args.mode == 'test':
+        model = atmNet.load
+
+    # lightning callbacks
+    ckpt_callback = None
+    lr_monitor = LearningRateMonitor(logging_interval='step')
+    pbar = TQDMProgressBar(refresh_rate=args.tqdm_rate)
+    tb_logger = TensorBoardLogger(save_dir=args.tb_dir, name=args.experiment)
+
+    # trainer
+    precision = 16 if args.amp else 32
+    if args.mode == 'train':
+        trainer = pl.Trainer(
+            accelerator='gpu',
+            strategy='ddp',
+            devices=2,
+            logger=[tb_logger],
+            default_root_dir=args.output_dir,
+            callbacks=[ckpt_callback, lr_monitor, pbar],
+            max_epochs=args.n_epochs,
+            log_every_n_steps=100,
+            precision=precision
+        )
+    elif args.mode == 'test':
+        trainer = pl.Trainer(
+            accelerator='gpu',
+            precision=precision,
+            max_epochs=1
+        )
+
+    # train
+    if args.mode == 'train':
+        trainer.fit(model=model, datamodule=dm)
+    elif args.mode == 'test':
+        trainer.test(model=model, datamodule=dm)

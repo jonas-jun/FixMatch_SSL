@@ -6,8 +6,8 @@ from torchmetrics import MetricCollection, Accuracy, Precision, Recall, F1Score
 
 def get_metrics(n_classes):
     single_metric = MetricCollection({
-        'acc_top1': Accuracy(task='multiclass', num_classes=n_classes average='macro'),
-        'acc_top5': Accuracy(task='multiclass', num_classes=n_classes average='macro', top_k=5),
+        'acc_top1': Accuracy(task='multiclass', num_classes=n_classes, average='macro'),
+        'acc_top5': Accuracy(task='multiclass', num_classes=n_classes, average='macro', top_k=5),
         'precision': Precision(task='multiclass', num_classes=n_classes, average='macro'),
         'recall': Recall(task='multiclass', num_classes=n_classes, average='macro')
         })
