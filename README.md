@@ -5,32 +5,18 @@
 - FixMatch without EDA model
 
 ## Dataset (like torchvision.ImageFolderDataset)
-- {TRAIN_DIR}
-    - class 0
-        - image 0-0
-        - image 0-1
-        - ...
-    - class 1
-        - image 1-0
-        - image 1-1
-        - ...
-    - class 2
-        - image 2-0
-        - ...
-- {VALID_DIR}
-    - class 0
-        - ...
-    - ...
-- {TEST_DIR}
-    - class 0
-        - ...
-    - ...
-- {UNLABEL_DIR}
-    - image u-0
-    - image u-1
-    - image u-2
-    - ...
-
+```
+📦dataset
+ ┣ 📂train
+ ┃ ┣ 📂cls1
+ ┃ ┣ 📂cls2
+ ┃ ┗ 📂cls3
+ ┣ 📂valid
+ ┃ ┗ 📂cls1
+ ┣ 📂test
+ ┃ ┗ 📂cls1
+ ┗ 📂unlabel
+```
 ## Model
 - ConvNext (timm)
 - PIT (Parameter-free layer)
