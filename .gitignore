@@ -262,3 +262,9 @@ $RECYCLE.BIN/
 
 output/*
 output_tb/*
+dataset/train/cls1/*
+dataset/train/cls2/*
+dataset/train/cls3/*
+dataset/valid/cls1/*
+dataset/test/cls1/*
+unlabel/*
