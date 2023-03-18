@@ -25,11 +25,11 @@ class atmDataModule(pl.LightningDataModule):
         transform_val = get_transform(mean=mean, std=std, in_size=self.args.in_size, train=False)
 
         if stage == 'fit':
-            self.dset_label = None
-            self.dset_unlabel = None
-            self.dset_val = None
+            self.dset_label = Label_Dataset(dir=self.args.label_dir, transform=transform_train)
+            self.dset_unlabel = UnLabel_Dataset(dir=self.args.unlabel_dir, transform=TransformFixMatch(mean=mean, std=std, in_size=self.args.in_size))
+            self.dset_val = Label_Dataset(dir=self.args.val_dir, transform=transform_val)
         elif stage == 'test':
-            self.dset_test = None
+            self.dset_test = Label_Dataset(dir=self.args.test_dir, transform=transform_val)
 
     def train_dataloader(self):
         loader_label = DataLoader(self.dset_label, batch_size=self.args.batch_size, num_workers=self.args.n_workers, shuffle=True, pin_memory=True)
