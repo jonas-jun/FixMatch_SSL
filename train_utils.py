@@ -9,9 +9,11 @@ def get_metrics(n_classes):
         'acc_top1': Accuracy(task='multiclass', num_classes=n_classes, average='macro'),
         'acc_top5': Accuracy(task='multiclass', num_classes=n_classes, average='macro', top_k=5),
         'precision': Precision(task='multiclass', num_classes=n_classes, average='macro'),
-        'recall': Recall(task='multiclass', num_classes=n_classes, average='macro')
+        'recall': Recall(task='multiclass', num_classes=n_classes, average='macro'),
+        'f1': F1Score(task='multiclass', num_classes=n_classes, average='macro')
         })
-    return single_metric
+    multi_metric = None # TODO: for multilabel classification
+    return single_metric, multi_metric
 
 def args_from_yaml(args, yml):
     with open(yml, 'r', encoding='utf-8') as f:

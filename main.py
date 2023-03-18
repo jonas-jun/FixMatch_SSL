@@ -7,7 +7,6 @@ from train_utils import args_from_yaml
 from data_utils import atmDataModule
 from model import atmNet
 
-
 if __name__ == '__main__':
     os.environ['CUDA_VISIBLE_DEVICES'] = '0,1'
     parser = argparse.ArgumentParser()
@@ -36,7 +35,15 @@ if __name__ == '__main__':
         model = atmNet.load
 
     # lightning callbacks
-    ckpt_callback = None
+    ckpt_callback = ModelCheckpoint(
+        monitor='val_acc_top1',
+        dirpath=os.path.join(args.output_dir, args.experiment),
+        filename='{epoch:02d}-{val_acc_top1:.2f}-{val_acc_top5:.2f}-{val_f1_macro:.2f}',
+        save_top_k=3,
+        save_weights_only=True,
+        mode='max',
+        verbose=True
+    )
     lr_monitor = LearningRateMonitor(logging_interval='step')
     pbar = TQDMProgressBar(refresh_rate=args.tqdm_rate)
     tb_logger = TensorBoardLogger(save_dir=args.tb_dir, name=args.experiment)

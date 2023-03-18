@@ -1,4 +1,8 @@
+import torch
+import torch.nn as nn
+import torch.optim as optim
 import pytorch_lightning as pl
+from train_utils import get_metrics
 
 class atmNet(pl.LightningModule):
     def __init__(self, args):
@@ -24,7 +28,18 @@ class atmNet(pl.LightningModule):
         pass
 
     def configure_optimizers(self):
-        return
+        if self.args.optim.upper() == 'SGD':
+            optimizer = optim.SGD(self.parameters(),
+                                  lr=self.args.lr,
+                                  momentum=self.args.momentum,
+                                  weight_decay=self.args.wdecay,
+                                  nesterov=True)
+        if self.args.scheduler == 'multistep':
+            schduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=range(10), gamma=0.5)
+        if schduler:
+            return [optimizer], [schduler]
+        else:
+            return optimizer
     
     def training_step(self, batch, batch_idx):
         return
